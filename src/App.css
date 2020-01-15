@@ -1,0 +1,40 @@
+.App {
+    display: flex;
+    flex-direction: row;
+}
+
+.todoList {
+    margin: 0 auto;
+    width: 300px;
+}
+
+.todoList > div {
+    padding: 10px;
+}
+
+.todoList-task.done {
+    opacity: 0.5;
+}
+
+.filter-active {
+    background-color: springgreen;
+}
+
+.error {
+    border-color: red;
+}
+
+.todoList-header {
+    display: flex;
+    align-items: center;
+}
+
+.todoList-header > button {
+    height: 30px;
+    width: 30px;
+}
+
+.todoList-header__title {
+    font-size: 28px;
+    font-weight: bold;
+}
