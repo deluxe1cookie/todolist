@@ -12,7 +12,7 @@ class TodoListFooter extends React.Component {
         return {isHidden: !state.isHidden}
     });
 
-    render = (props) => {
+    render = () => {
         let classForAll = this.props.filterValue === "All" ? "filter-active" : "";
         let classForCompleted = this.props.filterValue === "Completed" ? "filter-active" : "";
         let classForActive = this.props.filterValue === "Active" ? "filter-active" : "";

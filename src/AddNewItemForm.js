@@ -15,11 +15,11 @@ class AddNewItemForm extends React.Component {
 
     inputOnChange = (e) => {
         if (e.currentTarget.value.trim() === '') {
-            this.setState({error: true, title: ''})
+            this.setState({error: true, title: ''});
         } else {
             this.setState({
                 error: false, title: e.currentTarget.value
-            })
+            });
         }
     };
 
@@ -29,17 +29,17 @@ class AddNewItemForm extends React.Component {
     };
 
     render = () => {
-        const classForInput = this.state.error ? 'error' : '';
+        const classForButton = this.state.error ? 'button error' : 'button';
 
         return (
             <div className="todoList-newItemForm">
-                <input onKeyPress={this.inputOnKeyPress} onChange={this.inputOnChange} className={classForInput}
+                <input className='newItemForm-input' onKeyPress={this.inputOnKeyPress} onChange={this.inputOnChange}
                        type="text"
                        placeholder="New item name"
                        value={this.state.title}/>
-                <button onClick={this.onAddItemClick}>Add</button>
+                <button className={classForButton} onClick={this.onAddItemClick}>Add</button>
             </div>);
-    }
+    };
 }
 
 export default AddNewItemForm;

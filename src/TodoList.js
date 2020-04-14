@@ -1,95 +1,69 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
-import TodoListHeader from "./TodoListHeader";
-import TodoListTasks from "./TodoListTasks";
-import TodoListFooter from "./TodoListFooter";
-import {connect} from "react-redux";
-import {addTask, changeTask, changeTodolist, deleteTask, deleteTodolist, setTasks} from "./reducer";
-import {api} from "./api";
+import TodoListHeader from './TodoListHeader';
+import TodoListTasks from './TodoListTasks';
+import TodoListFooter from './TodoListFooter';
+import {connect} from 'react-redux';
+import {addTask, changeTask, changeTodolist, deleteTask, deleteTodolist, getTasks, moveTask} from './redux/reducer';
+import ItemTypes from './utils/ItemTypes';
+import {useDrop} from 'react-dnd';
 
-class TodoList extends React.Component {
-    componentDidMount() {
-        this.restoreState();
-    }
+const TodoList = (props) => {
+    const [filterValue, setFilterValue] = useState('All');
+    const [collectedProps, drop] = useDrop({
+        accept: ItemTypes.TASK,
+        drop: (item) => props.moveTask(item.id, item.todolistId, props.id, item.title),
+        collect: monitor => ({isOver: !!monitor.isOver()})
+    });
 
-    state = {
-        filterValue: 'All'
+    useEffect(() => {
+        props.getTasks(props.id);
+    }, []);
+
+    const addTask = (title) => {
+        props.addTask(props.id, title);
     };
 
-    changeFilter = (newFilterValue) => {
-        this.setState({
-            filterValue: newFilterValue
-        });
+    const deleteTask = (taskId) => {
+        props.deleteTask(props.id, taskId);
     };
 
-    restoreState = () => {
-        api.setTasks(this.props.id)
-            .then(res => {
-                let tasks = res.data.items;
-                this.props.setTasks(tasks, this.props.id);
-            });
+    const changeTask = (taskId, updatedTask) => {
+        props.changeTask(props.id, taskId, updatedTask);
     };
 
-    addTask = (title) => {
-        api.addTask(this.props.id, title)
-            .then(res => {
-                let task = res.data.data.item;
-                this.props.addTask(task, this.props.id);
-            });
+    const changeTodolist = (title) => {
+        props.changeTodolist(props.id, title);
     };
 
-    deleteTask = (taskId) => {
-        api.deleteTask(this.props.id, taskId)
-            .then(res => {
-                this.props.deleteTask(this.props.id, taskId);
-            });
+    const changeFilter = (newFilterValue) => {
+        setFilterValue(newFilterValue);
     };
 
-    deleteTodolist = () => {
-        api.deleteTodolist(this.props.id)
-            .then(res => {
-                this.props.deleteTodolist(this.props.id);
-            });
-    };
+    return (
+        <div className="todoList" ref={drop}>
+            <TodoListHeader addItem={addTask}
+                            todoListTitle={props.todoListTitle}
+                            deleteTodolist={() => props.deleteTodolist(props.id)}
+                            changeTodolist={changeTodolist}/>
+            <TodoListTasks changeTask={changeTask}
+                           tasks={props.tasks}
+                           filterValue={filterValue}
+                           deleteTask={deleteTask}
+                           todolistId={props.id}/>
+            <TodoListFooter filterValue={filterValue}
+                            changeFilter={changeFilter}/>
+        </div>
+    );
 
-    changeTask = (taskId, updatedTask) => {
-        api.changeTask(this.props.id, taskId, updatedTask)
-            .then(res => {
-                this.props.changeTask(this.props.id, taskId, updatedTask)
-            })
-    };
+};
 
-    changeTodolist = (title) => {
-        api.changeTodolist(this.props.id, title)
-            .then(res => {
-                this.props.changeTodolist(this.props.id, title)
-            })
-    };
-
-    render = () => {
-        return (
-            <div className="todoList">
-                <TodoListHeader addItem={this.addTask} todoListTitle={this.props.todoListTitle}
-                                deleteTodolist={this.deleteTodolist} changeTodolist={this.changeTodolist}/>
-                <TodoListTasks changeTask={this.changeTask}
-
-                               tasks={this.props.tasks}
-                               filterValue={this.state.filterValue}
-                               deleteTask={this.deleteTask}/>
-                <TodoListFooter filterValue={this.state.filterValue}
-                                changeFilter={this.changeFilter}/>
-            </div>
-        );
-    }
-}
-
-const ConnectedTodolist = connect(null, {
+export default connect(null, {
     addTask,
     changeTask,
     deleteTodolist,
     deleteTask,
-    setTasks,
-    changeTodolist
+    getTasks,
+    changeTodolist,
+    moveTask
 })(TodoList);
-
-export default ConnectedTodolist;

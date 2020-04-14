@@ -3,8 +3,8 @@ import React from 'react';
 class DeleteItemButton extends React.Component {
     render = () => {
         return (
-            <button onClick={this.props.delete}>X</button>);
-    }
+            <button className='delete-button' onClick={this.props.delete}><strong>X</strong></button>);
+    };
 }
 
 export default DeleteItemButton;

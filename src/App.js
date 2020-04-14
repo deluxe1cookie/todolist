@@ -1,49 +1,42 @@
 import React from 'react';
 import './App.css';
-import TodoList from "./TodoList";
-import AddNewItemForm from "./AddNewItemForm";
-import {connect} from "react-redux";
-import {addTodolist, setTodolists} from "./reducer";
-import {api} from "./api";
+import TodoList from './TodoList';
+import AddNewItemForm from './AddNewItemForm';
+import {connect} from 'react-redux';
+import {addTodolist, getTodolists, login} from './redux/reducer';
+import Backend from 'react-dnd-html5-backend';
+import {DndProvider} from 'react-dnd';
+import Preloader from './Preloader';
 
 class App extends React.Component {
     componentDidMount() {
-        this.restoreState();
+        this.props.login('free@samuraijs.com', 'free');
+        this.props.getTodolists();
     }
 
-    restoreState = () => {
-        api.setTodolists()
-            .then(res => {
-                this.props.setTodolists(res.data);
-            });
-    };
-
-    addTodoList = (title) => {
-        api.addTodolist(title)
-            .then(res => {
-                const todolist = res.data.data.item;
-                this.props.addTodolist(todolist);
-            });
-    };
-
     render = () => {
-        const todoListElements = this.props.todolists.map(tl => <TodoList id={tl.id} todoListTitle={tl.title}
+        const todoListElements = this.props.todolists.map(tl => <TodoList key={tl.id} id={tl.id}
+                                                                          todoListTitle={tl.title}
                                                                           tasks={tl.tasks}/>);
 
         return (
-            <div className="App">
-                <AddNewItemForm addItem={this.addTodoList}/>
-                {todoListElements}
-            </div>
+            <DndProvider backend={Backend}>
+                <div className="App">
+                    {this.props.isFetching && <Preloader/>}
+
+                    <AddNewItemForm addItem={this.props.addTodolist}/>
+                    {todoListElements}
+                </div>
+            </DndProvider>
         );
-    }
+    };
 }
 
 const mapStateToProps = (state) => {
     return {
-        todolists: state.todolists
-    }
+        todolists: state.todolists,
+        isFetching: state.isFetching
+    };
 };
 
-const ConnectedApp = connect(mapStateToProps, {addTodolist, setTodolists})(App);
-export default ConnectedApp;
+export default connect(mapStateToProps, {addTodolist, getTodolists, login})(App);

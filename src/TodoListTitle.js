@@ -39,7 +39,7 @@ class TodoListTitle extends React.Component {
                              autoFocus={true}
                              value={this.state.title}
                              onKeyDown={this._handleKeyDown}/>
-                    : <h3 className="todoList-header__title" onClick={this.activateEditMode}>{this.state.title}</h3>}
+                    : <h3 onClick={this.activateEditMode}>{this.state.title}</h3>}
             </div>);
     }
 }
